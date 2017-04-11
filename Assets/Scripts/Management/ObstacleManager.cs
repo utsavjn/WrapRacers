@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using GameData;
 
 struct ObstacleInfo
 {
     public string[] strObstaclesFullPathList;
-    public float radius;
+    public float radius;            //generation range
     public float createTime;
-    public int rndRange;
-    public Vector2 checkPoint;
-    public int point;
+    public int rndRange;            //obstacle generation count
+    public Vector2 checkPoint;      //obstacle generation point
+    public int point;               //player point(score)
     public OBSTACLETYPE obstacleType;
     public ASTEROIDTYPE asteroidType;
 }
@@ -30,14 +32,17 @@ public enum OBSTACLETYPE
 public class ObstacleManager : MonoBehaviour {
     
     public string str_obstaclePath = "Prefabs/Obstacles/Asteroid1";
-
-    private ArrayList m_activeObstacleList;
-
+    
     private Transform player;
 
     /// <summary>
     /// obstacle all of infos
     /// </summary>
+    public ObstacleData m_obstacleData;
+
+    private int obstacleDataLength;
+    private List<int> m_obstacleDataIdList = new List<int>();
+
     ObstacleInfo obstacleInfo;
     public float radius = 30f;
     public int createObtacles = 10;
@@ -71,9 +76,23 @@ public class ObstacleManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        InitObstacleInfoData();
         Init();
     }
-	
+
+    /// <summary>
+    /// read "GameData - Obstacles" xml file
+    /// </summary>
+    void InitObstacleInfoData()
+    {        
+        obstacleDataLength = ObstacleData.dataMap.Count;
+        foreach(var key in ObstacleData.dataMap.Keys)
+        {
+            Debug.Log("int dataLength = ObstacleData.dataMap.Count;" + key);
+            m_obstacleDataIdList.Add(key);
+        }        
+    }
+
 	// Update is called once per frame
 	void Update () {
         ////check obstacle creat tiem
@@ -95,10 +114,14 @@ public class ObstacleManager : MonoBehaviour {
     private void CreateObstacle()
     {
         int count = Random.Range(1, obstacleInfo.rndRange);
+        int idx = Random.Range(0, obstacleDataLength - 1);
+
+        m_obstacleData = ObstacleData.dataMap[m_obstacleDataIdList[idx]];
+
         for (int i = 0; i < count; i++)
-        {
-            //if( == )
-            GameObject prefabs = (GameObject)Resources.Load(str_obstaclePath);
+        {                  
+            
+            GameObject prefabs = (GameObject)Resources.Load(m_obstacleData.stringfullpath);
 
             float ang = Random.value * 360;
             float x = obstacleInfo.checkPoint.x + obstacleInfo.radius * Mathf.Sin(ang * Mathf.Deg2Rad);

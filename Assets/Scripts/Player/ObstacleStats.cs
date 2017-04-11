@@ -25,5 +25,5 @@ public class ObstacleStats : MonoBehaviour, Stats {
         localPlayer.PlayerScore += obstacleInfo.point;
         ObjectPooler.GetPooledObject(Prefabs.EXPLOSION_SMALL, transform.position, Quaternion.identity).SetActive(true);
         Destroy(gameObject);
-	}
+    }
 }

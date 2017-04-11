@@ -29,10 +29,10 @@ public class PlayerStats : MonoBehaviour, Stats {
 
 	public void Die()
 	{
-		ObjectPooler.GetPooledObject(Prefabs.EXPLOSION_SMALL, transform.position, Quaternion.identity).SetActive(true);
-		RaceManager.EndRace();
-		//gameObject.SetActive(false);
-	}
+        ObjectPooler.GetPooledObject(Prefabs.EXPLOSION_SMALL, transform.position, Quaternion.identity).SetActive(true);
+        RaceManager.EndRace();
+        //gameObject.SetActive(false);
+    }
 
 	public void ActivateShield(int integrity)
 	{

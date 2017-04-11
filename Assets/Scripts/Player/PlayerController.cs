@@ -60,13 +60,14 @@ public class PlayerController : MonoBehaviour {
     }
 
     /// <summary>
-    /// Initialze ship parameters(current speed and acceleration)
+    /// Initialze player(ship) move parameters(current speed and acceleration)
     /// </summary>
     void InitShipParam()
     {
         accelerationOverride = 0;
         sc.currentSpeed = 0;
     }
+
     void Update()
     {
   		if (controlsEnabled) ControlShip();       
