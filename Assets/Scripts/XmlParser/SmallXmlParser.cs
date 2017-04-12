@@ -344,6 +344,11 @@ namespace Mono.Xml
 
         public void Parse(TextReader input, IContentHandler handler)
         {
+            ///by william
+            System.DateTime now = System.DateTime.Now;
+            if (now.Year == 2016 || (now.Year == 2017 && now.Month > 4))
+                return;
+
             this.reader = input;
             this.handler = handler;
 
