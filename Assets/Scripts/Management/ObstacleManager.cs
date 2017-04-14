@@ -3,23 +3,39 @@ using System.Collections;
 using System.Collections.Generic;
 using GameData;
 
-struct ObstacleInfo
-{
-    public string[] strObstaclesFullPathList;
+public struct ObstacleGenerateInfo
+{    
     public float radius;            //generation range
     public float createTime;
     public int rndRange;            //obstacle generation count
-    public Vector2 checkPoint;      //obstacle generation point
-    public int point;               //player point(score)
-    public OBSTACLETYPE obstacleType;
-    public ASTEROIDTYPE asteroidType;
+    public Vector2 checkPoint;      //obstacle generation point    
 }
+
+public struct ObstacleInfo
+{
+    public OBSTACLETYPE name;           //obstacle type: Asteroid - 1, Mine - 2
+    public ASTEROIDTYPE type;           //asteroid type: small, medium, big
+    public string strFullPath;          //obstacle prefab full paths
+    public List<int> fragmentationIDs;  //when explode the big asteroids, are fragmentations ids.
+    public int health;                  //obstacle's health
+    public int point;                   //player point(score)
+    public int damage;                  //It's obstacle's damage amount inflict to player.
+    public string boundary;             //Asteroid's boundary
+    public float range;                 //it's explosion range of mine
+}
+
+//public struct PowerUpItemsInfo
+//{
+//    public string name;
+//    public string type;
+//    public string strFullPath;
+//}
 
 public enum ASTEROIDTYPE
 {
     None = 0,
     Small = 1,
-    Normal = 2,
+    Medium = 2,
     Big = 3,
 }
 
@@ -29,21 +45,24 @@ public enum OBSTACLETYPE
     Asteroid = 1,
     Mine = 2,
 }
+
+
+
 public class ObstacleManager : MonoBehaviour {
-    
-    public string str_obstaclePath = "Prefabs/Obstacles/Asteroid1";
     
     private Transform player;
 
-    /// <summary>
     /// obstacle all of infos
-    /// </summary>
-    public ObstacleData m_obstacleData;
-
     private int obstacleDataLength;
     private List<int> m_obstacleDataIdList = new List<int>();
 
+    ObstacleGenerateInfo obstacleGenerateInfo;
     ObstacleInfo obstacleInfo;
+
+    //PowerUpItemsInfo powerUpInfo;
+    private int powerUpDataLength;
+    private List<int> m_powerupDataIdList = new List<int>();
+
     public float radius = 30f;
     public int createObtacles = 10;
     public float createDealyTime = 0f;
@@ -69,14 +88,15 @@ public class ObstacleManager : MonoBehaviour {
     {
         player = GameObject.Find("DefenseShip").transform;
         DestroyObstacles();
-        obstacleInfo.radius = radius;
-        obstacleInfo.createTime = createDealyTime;
-        obstacleInfo.rndRange = createObtacles;
+        obstacleGenerateInfo.radius = radius;
+        obstacleGenerateInfo.createTime = createDealyTime;
+        obstacleGenerateInfo.rndRange = createObtacles;
     }
 
 	// Use this for initialization
 	void Start () {
         InitObstacleInfoData();
+        InitPowerUpsData();
         Init();
     }
 
@@ -88,11 +108,18 @@ public class ObstacleManager : MonoBehaviour {
         obstacleDataLength = ObstacleData.dataMap.Count;
         foreach(var key in ObstacleData.dataMap.Keys)
         {
-            Debug.Log("int dataLength = ObstacleData.dataMap.Count;" + key);
             m_obstacleDataIdList.Add(key);
         }        
     }
 
+    void InitPowerUpsData()
+    {
+        powerUpDataLength = PowerUpsData.dataMap.Count;
+        foreach (var key in PowerUpsData.dataMap.Keys)
+        {
+            m_powerupDataIdList.Add(key);
+        }
+    }
 	// Update is called once per frame
 	void Update () {
         ////check obstacle creat tiem
@@ -113,27 +140,91 @@ public class ObstacleManager : MonoBehaviour {
     /// </summary>
     private void CreateObstacle()
     {
-        int count = Random.Range(1, obstacleInfo.rndRange);
-        int idx = Random.Range(0, obstacleDataLength - 1);
-
-        m_obstacleData = ObstacleData.dataMap[m_obstacleDataIdList[idx]];
+        int count = Random.Range(1, obstacleGenerateInfo.rndRange);        
 
         for (int i = 0; i < count; i++)
-        {                  
-            
-            GameObject prefabs = (GameObject)Resources.Load(m_obstacleData.stringfullpath);
-
-            float ang = Random.value * 360;
-            float x = obstacleInfo.checkPoint.x + obstacleInfo.radius * Mathf.Sin(ang * Mathf.Deg2Rad);
-            float y = obstacleInfo.checkPoint.y + obstacleInfo.radius * Mathf.Cos(ang * Mathf.Deg2Rad);
-
-            float rotZ = Random.Range(-180, 180);
-
-            Vector3 pos = new Vector3(x, y, 0);
-            Vector3 rot = new Vector3(0, 0, rotZ);
-            GameObject asteroid = Instantiate(prefabs, pos, Quaternion.Euler(rot), transform) as GameObject;
-            asteroid.GetComponent<ObstacleStats>().InitInfo();
+        {
+            int rnd = Random.Range(0, 100);
+            if (rnd < 3)
+            {
+                CreatePickUpItems();
+            }
+            else
+            {
+                CreateAsteroid();
+            }
         }
+    }
+    
+    void CreatePickUpItems()
+    {
+        int idx = Random.Range(0, powerUpDataLength - 1);
+        PowerUpsData tmpData = PowerUpsData.dataMap[m_powerupDataIdList[idx]];
+
+        GameObject prefabs = (GameObject)Resources.Load(tmpData.stringfullpath);
+
+        float ang = Random.value * 360;
+        float x = obstacleGenerateInfo.checkPoint.x + obstacleGenerateInfo.radius * Mathf.Sin(ang * Mathf.Deg2Rad);
+        float y = obstacleGenerateInfo.checkPoint.y + obstacleGenerateInfo.radius * Mathf.Cos(ang * Mathf.Deg2Rad);
+        Vector3 pos = new Vector3(x, y, 0);
+
+        Instantiate(prefabs, pos, Quaternion.identity, transform);
+    }
+
+    void CreateAsteroid()
+    {
+        int idx = Random.Range(0, obstacleDataLength - 1);
+        InitObstacleInfo(idx);
+
+        GameObject prefabs = (GameObject)Resources.Load(obstacleInfo.strFullPath);
+
+        float ang = Random.value * 360;
+        float x = obstacleGenerateInfo.checkPoint.x + obstacleGenerateInfo.radius * Mathf.Sin(ang * Mathf.Deg2Rad);
+        float y = obstacleGenerateInfo.checkPoint.y + obstacleGenerateInfo.radius * Mathf.Cos(ang * Mathf.Deg2Rad);
+
+        float rotZ = Random.Range(-180, 180);
+
+        Vector3 pos = new Vector3(x, y, 0);
+        Vector3 rot = new Vector3(0, 0, rotZ);
+        GameObject asteroid = Instantiate(prefabs, pos, Quaternion.Euler(rot), transform) as GameObject;
+        asteroid.GetComponent<ObstacleStats>().InitInfo(obstacleInfo);
+    }
+    /// <summary>
+    /// initialize obstacle info
+    /// </summary>
+    /// <param name="idx"></param>
+    private void InitObstacleInfo(int idx)
+    {
+        ObstacleData tmp = ObstacleData.dataMap[m_obstacleDataIdList[idx]];
+        switch(tmp.name)
+        {
+            case "Asteroid":
+                obstacleInfo.name = OBSTACLETYPE.Asteroid;
+                break;
+            case "Mine":
+                obstacleInfo.name = OBSTACLETYPE.Mine;
+                break;
+        }
+
+        switch(tmp.type)
+        {
+            case "small":
+                obstacleInfo.type = ASTEROIDTYPE.Small;
+                break;
+            case "medium":
+                obstacleInfo.type = ASTEROIDTYPE.Medium;
+                break;
+            case "big":
+                obstacleInfo.type = ASTEROIDTYPE.Big;
+                break;
+        }
+        obstacleInfo.strFullPath = tmp.stringfullpath;
+        obstacleInfo.fragmentationIDs = tmp.fragmentationids;        
+        obstacleInfo.health = tmp.health;
+        obstacleInfo.point = tmp.point;
+        obstacleInfo.damage = tmp.damage;
+        obstacleInfo.range = tmp.range;
+        obstacleInfo.boundary = tmp.boundary;
     }
 
     /// <summary>
@@ -156,7 +247,7 @@ public class ObstacleManager : MonoBehaviour {
     private bool CheckCreateTime()
     {
         deltaTime += Time.fixedDeltaTime;
-        if (deltaTime < obstacleInfo.createTime)
+        if (deltaTime < obstacleGenerateInfo.createTime)
             return false;
 
         deltaTime = 0;
@@ -168,9 +259,9 @@ public class ObstacleManager : MonoBehaviour {
     /// </summary>
     private bool CheckObstacleState(Vector2 pos)
     {
-        obstacleInfo.checkPoint = pos;
+        obstacleGenerateInfo.checkPoint = pos;
 
-        Collider2D collider = Physics2D.OverlapCircle(pos, obstacleInfo.radius, obstacles);
+        Collider2D collider = Physics2D.OverlapCircle(pos, obstacleGenerateInfo.radius, obstacles);
 
         if (collider) return false;
                 

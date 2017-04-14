@@ -24,11 +24,11 @@ public class PlayerStats : MonoBehaviour, Stats {
 			return;
 		}
 
-		Die();
+		//Die();
 	}
 
 	public void Die()
-	{
+	{        
         ObjectPooler.GetPooledObject(Prefabs.EXPLOSION_SMALL, transform.position, Quaternion.identity).SetActive(true);
         RaceManager.EndRace();
         //gameObject.SetActive(false);

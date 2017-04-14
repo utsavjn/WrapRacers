@@ -1,11 +1,18 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public struct PlayerInfo
 {
-    public PLAYERTYPE playerType;    
-    public int score;
+    public PLAYERTYPE playerType;
     public SHIELDSTATE shieldState;
+    public int score;
+    public bool booster;
+    public float topSpeed;
+    public float baseTopSpeed;
+    public float curSpeed;
+    public int health;
+    public int itemCount;
 }
 
 public enum PLAYERTYPE
@@ -30,12 +37,14 @@ public class PlayerController : MonoBehaviour {
 	public bool controlsEnabled = true;
 
 	public int points = 0;
-	float distanceTraveled = 0;
 
     /// <summary>
     /// Player Info
     /// </summary>
-    PlayerInfo playerInfo;
+    public PlayerInfo playerInfo;
+
+    public Text str_playerScore;
+    public Text str_playerBooster;
 
     void OnEnable()
     {
@@ -68,6 +77,15 @@ public class PlayerController : MonoBehaviour {
         sc.currentSpeed = 0;
     }
 
+    public void InitPlayerInfo()
+    {
+        GameObject[] objList = GameObject.FindGameObjectsWithTag("PowerUp");
+        foreach (GameObject obj in objList)
+        {
+            Destroy(obj);
+        }
+    }
+
     void Update()
     {
   		if (controlsEnabled) ControlShip();       
@@ -80,17 +98,13 @@ public class PlayerController : MonoBehaviour {
     }
 
     #region Ship Powerup Interface Functions
-
     public void ActivateShield() {
       sc.ActivateShield();
     }
-
     public void DeactivateShield() {
       sc.DeactivateShield();
     }
-
     #endregion
-
 
     public void IncrementSpeed(float increment)
     {
@@ -142,11 +156,59 @@ public class PlayerController : MonoBehaviour {
 	{
 		sc.thrustActive = !sc.thrustActive;
 	}
-
+    /// <summary>
+    /// a partial Player Score
+    /// </summary>
     public int PlayerScore
     {
-        set { playerInfo.score = value; Debug.Log("Player Score" + playerInfo.score); }
+        set
+        {
+            playerInfo.score = value;
+            ShowPlayerScore();
+        }
         get { return playerInfo.score; }
+    }
+
+    public void AddPlayerScore(int score)
+    {
+        if (playerInfo.booster)
+            score = (int)(score * 1.2f);
+        PlayerScore += score;
+    }
+
+    void ShowPlayerScore()
+    {
+        str_playerScore.text = PlayerScore.ToString();
+    }
+
+    void InitPlayerScore()
+    {
+        playerInfo.score = 0;
+        ShowPlayerScore();
+    }
+
+    public void SetPlayerBooster(bool bFlag)
+    {
+        playerInfo.booster = bFlag;
+        str_playerBooster.text = "1.2" + "x";
+        Debug.Log("playerInfo.booster = bFlag=====" + playerInfo.booster);
+    }
+
+    public void SetPlayerHealth(int delta)
+    {
+        playerInfo.health += delta;
+        Debug.Log("playerInfo.health += delta=====" + playerInfo.health);
+    }
+
+    public void SetPlayerEnergy(float delta)
+    {
+        playerInfo.topSpeed += delta;
+        Debug.Log("playerInfo.topSpeed += delta=====" + playerInfo.topSpeed);
+    }
+
+    public void SetPlayerBomb()
+    {
+
     }
 }
 

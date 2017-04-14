@@ -52,7 +52,7 @@ namespace GameData
 
 	public class GameDataController : DataLoader
 	{
-		private List<Type> m_defaultData = new List<Type>() { typeof(PlayerData), typeof(ObstacleData)};
+		private List<Type> m_defaultData = new List<Type>() { typeof(ObstacleData), typeof(PowerUpsData)};
 
 		private static GameDataController m_instance;
 

@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<PowerUps>
+  <PowerUps-item>
+	  <id_i>2001</id_i>                                                       <!--obstacles id: ID is an identifier that identifies all obstacles.-->
+	  <name_s>Bomb</name_s>                                               <!--obstacle name: asteroid, mine-->
+    <type>small</type>                                                      <!--obstacle type: small, medium, big-->
+    <stringfullpath_s>Prefabs/PowerUps/Bomb</stringfullpath_s>  <!--obstacle object full path-->  
+  </PowerUps-item>
+  <PowerUps-item>
+    <id_i>2002</id_i>
+    <name_s>Bomb</name_s>
+    <type>small</type>
+    <stringfullpath_s>Prefabs/PowerUps/Energy</stringfullpath_s>
+  </PowerUps-item>
+  <PowerUps-item>
+    <id_i>2003</id_i>
+    <name_s>Bomb</name_s>
+    <type>small</type>
+    <stringfullpath_s>Prefabs/PowerUps/Health</stringfullpath_s>
+  </PowerUps-item>
+  <PowerUps-item>
+    <id_i>2004</id_i>
+    <name_s>Bomb</name_s>
+    <type>small</type>
+    <stringfullpath_s>Prefabs/PowerUps/Magnet</stringfullpath_s>
+  </PowerUps-item>
+  <PowerUps-item>
+    <id_i>2005</id_i>
+    <name_s>Bomb</name_s>
+    <type>small</type>
+    <stringfullpath_s>Prefabs/PowerUps/Random</stringfullpath_s>
+  </PowerUps-item>
+  <PowerUps-item>
+    <id_i>2006</id_i>
+    <name_s>Bomb</name_s>
+    <type>small</type>
+    <stringfullpath_s>Prefabs/PowerUps/Shield</stringfullpath_s>
+  </PowerUps-item>
+</PowerUps>

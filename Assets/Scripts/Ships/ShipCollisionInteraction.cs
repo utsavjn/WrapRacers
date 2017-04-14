@@ -38,10 +38,14 @@ public class ShipCollisionInteraction : MonoBehaviour {
 		}
 	}
 
+    /// <summary>
+    /// when conflect obstacle, ...
+    /// </summary>
+    /// <param name="collidedObject"></param>
 	void HitObstacle(Transform collidedObject)
 	{
 		collidedObject.transform.GetComponent<Stats>().Die();
-		GetComponent<Stats>().Hit(1);
+		//GetComponent<Stats>().Hit(1);
 	}
 
 	void GrabPowerUp(Transform collidedObject)
@@ -51,6 +55,8 @@ public class ShipCollisionInteraction : MonoBehaviour {
 		print(powerupName);
 
 		PowerupController.ApplyPowerup(powerupName, GetComponent<ShipController>());
+
+        Destroy(collidedObject.gameObject);
 	}
 	
 	// Update is called once per frame

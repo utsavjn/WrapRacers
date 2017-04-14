@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class RaceManager : MonoBehaviour {
 
-	public Text lapText;
-	public Vector3 startPos = new Vector3(0, 1, 0);
+    public Text lapText;
+    public Vector3 startPos = new Vector3(0, 1, 0);
 
     PlayerShipData shipData;
 
@@ -16,14 +16,14 @@ public class RaceManager : MonoBehaviour {
 
     public GameObject ship;
 
-	//bool firstLap = true;
+    //bool firstLap = true;
 
     public Transform rightCenter;
     public Transform leftCenter;
 
-	public delegate void RaceAction();
-	public static event RaceAction OnRaceEnd;
-	public static event RaceAction OnRaceStart;
+    public delegate void RaceAction();
+    public static event RaceAction OnRaceEnd;
+    public static event RaceAction OnRaceStart;
 
     public delegate void ObstaclesAction();
     /// <summary>
@@ -32,7 +32,7 @@ public class RaceManager : MonoBehaviour {
     public static event ObstaclesAction OnInitObstacles;
 
     int laps = 3;
-	int CurrentLap {
+    int CurrentLap {
         get { return currentLap; }
         set {
             if (value > laps) currentLap = 1;
@@ -43,74 +43,88 @@ public class RaceManager : MonoBehaviour {
     int currentLap = 1;
 
     float speedIncrement = 5f;
-	 
-	public PlayerController localPlayer;
+
+    public PlayerController localPlayer;
 
     private Dictionary<string, GameObject> shipPrefabs = new Dictionary<string, GameObject>();
 
-	public bool goingBackward;
+    public bool goingBackward;
 
-	public UIController uc;
+    public UIController uc;
 
-	bool hitLeftMidway = false;
-	bool hitRightMidway = false;
+    bool hitLeftMidway = false;
+    bool hitRightMidway = false;
 
     #region Lap Progress Determination
 
     private float largestAngleRight = 1;
 
-	private float largestAngleLeft = 1;
+    private float largestAngleLeft = 1;
 
     private float currentAngle = 1;
 
-	public float LapProgressRight
-	{
-		get { return largestAngleRight / CIRCUMFERENCE; }
-	}
-
-	public float LapProgressLeft
-	{
-		get { return largestAngleLeft / CIRCUMFERENCE; }
-	}
-
-	public const int CIRCUMFERENCE = 359;
-
-	#endregion
-
-	#region Monobehaviour Functions
-
-	void Awake()
-	{
-		uc = GetComponent<UIController>();
-	}
-
-	void OnEnable()
-	{
-		OnRaceEnd += DisablePlayerControls;
-		OnRaceEnd += uc.ShowGameOver;
-
-		OnRaceStart += uc.HideGameOver;
-		OnRaceStart += ResetPlayerOrientation;
-		OnRaceStart += EnablePlayerControls;        
+    public float LapProgressRight
+    {
+        get { return largestAngleRight / CIRCUMFERENCE; }
     }
 
-	void OnDisable()
-	{
-		OnRaceEnd -= DisablePlayerControls;
-		OnRaceEnd -= uc.ShowGameOver;
+    public float LapProgressLeft
+    {
+        get { return largestAngleLeft / CIRCUMFERENCE; }
+    }
 
-		OnRaceStart -= uc.HideGameOver;
-		OnRaceStart -= ResetPlayerOrientation;
-		OnRaceStart -= EnablePlayerControls;
-	}
+    public const int CIRCUMFERENCE = 359;
 
-	#endregion
+    #endregion
 
-	public void ResetPlayerOrientation()
-	{
-		localPlayer.sc.transform.position = startPos;
-		localPlayer.sc.transform.rotation = Quaternion.Euler(0, 0, 0);
-	}
+    #region Monobehaviour Functions
+
+    void Awake()
+    {
+        uc = GetComponent<UIController>();
+    }
+
+    void OnEnable()
+    {
+        OnRaceEnd += DisablePlayerControls;
+        OnRaceEnd += uc.ShowGameOver;
+
+        OnRaceStart += uc.HideGameOver;
+        OnRaceStart += ResetPlayerOrientation;
+        OnRaceStart += EnablePlayerControls;
+        OnRaceStart += InitPlayerInfo;
+        OnRaceStart += InitRaceObstacles;
+    }
+
+    void OnDisable()
+    {
+        OnRaceEnd -= DisablePlayerControls;
+        OnRaceEnd -= uc.ShowGameOver;
+
+        OnRaceStart -= uc.HideGameOver;
+        OnRaceStart -= ResetPlayerOrientation;
+        OnRaceStart -= EnablePlayerControls;
+        OnRaceStart -= InitPlayerInfo;
+        OnRaceStart -= InitRaceObstacles;
+    }
+
+    #endregion
+
+    public void ResetPlayerOrientation()
+    {
+        localPlayer.sc.transform.position = startPos;
+        localPlayer.sc.transform.rotation = Quaternion.Euler(0, 0, 0);
+    }
+
+    public void InitPlayerInfo()
+    {
+        localPlayer.InitPlayerInfo();
+    }
+
+    public void InitRaceObstacles()
+    {
+        OnInitObstacles();
+    }
 
 	void DisablePlayerControls()
 	{
@@ -133,7 +147,6 @@ public class RaceManager : MonoBehaviour {
 	public void ResetRace()
 	{
 		if (OnRaceStart != null) OnRaceStart();
-        OnInitObstacles();
 	}
 
     public int ShipToPathOriginAngle(Transform ship, Vector2 origin)

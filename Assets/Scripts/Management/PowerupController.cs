@@ -13,7 +13,7 @@ public class PowerupController : MonoBehaviour
 
 	public static Dictionary<string, Effect> powerups = new Dictionary<string, Effect>();
 
-	//RaceManager rm;
+    //RaceManager rm;
 
 	void Start()
 	{
@@ -34,45 +34,47 @@ public class PowerupController : MonoBehaviour
 
 	public static void ApplyPowerup(string name, ShipController player)
 	{
-		var powerupEffect = powerups.GetValue(name);
-
+        var powerupEffect = powerups.GetValue(name);        
 		// add ending later
 		powerupEffect.Start(player);
 	}
 
 	public void Bomb(ShipController player)
 	{
-		// Do bomb stuff
-	}
+        // Do bomb stuff
+        player.GetUpBomb();
+    }
 
 	public void Energy(ShipController player)
 	{
-		// Do bomb stuff
-	}
+        // Do bomb stuff
+        player.GetUpEnergy();
+    }
 
 	public void Health(ShipController player)
 	{
-		// Do bomb stuff
-	}
+        // Do bomb stuff
+        player.GetUpHealth();
+    }
 
 	public void Magnet(ShipController player)
 	{
-		// Do bomb stuff
-	}
+        // Do bomb stuff
+        player.GetUpMagnet();
+    }
 
 	public void Random(ShipController player)
 	{
-		// Do bomb stuff
-	}
+        // Do bomb stuff
+        player.GetUpRamdom();
+    }
 
 	public void Shield(ShipController player)
 	{
 		// Do bomb stuff
 		player.ActivateShield();
-	}
-
+    }
 	#endregion
-
 	#region Powerup End Actions
 
 	public void BombEndAction(ShipController player)
@@ -105,7 +107,6 @@ public class PowerupController : MonoBehaviour
 		// Do bomb stuff
 		player.DeactivateShield();
 	}
-
 	#endregion
 }
 
