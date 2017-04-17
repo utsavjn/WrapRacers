@@ -119,6 +119,7 @@ public class RaceManager : MonoBehaviour {
     public void InitPlayerInfo()
     {
         localPlayer.InitPlayerInfo();
+
     }
 
     public void InitRaceObstacles()
