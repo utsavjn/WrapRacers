@@ -1,6 +1,7 @@
 ﻿#define ANDROID_TEST
 using UnityEngine;
 using System.Collections;
+using GameData;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(ShipAnimator))]
@@ -50,6 +51,10 @@ public class ShipController : MonoBehaviour {
     #endregion
     public void IncrementSpeed(float increment)
     {
+        if (baseTopSpeed >= LevelData.dataMap[4001].shipbasespeed)
+            return;
+
+        baseTopSpeed += increment;
         topSpeed += increment;
     }
 
@@ -118,15 +123,10 @@ public class ShipController : MonoBehaviour {
         {
             // accelerate speed by accelerationRate per second
             Accelerate();
-
-			// apply speed as force to rigidbody
-			//ApplyForce();
 		}
 		else
         {
 			Decelerate();
-
-			//rig.velocity = transform.up * currentSpeed;
 		}
 
 		ApplyForce ();
@@ -147,10 +147,10 @@ public class ShipController : MonoBehaviour {
         }
     }
 
-    void ApplyForce()
+    public void ApplyForce()
 	{
-		//rig.AddForce(transform.up.normalized * currentSpeed, ForceMode2D.Impulse);
-		//rig.velocity = Vector2.Lerp(rig.velocity, transform.up * topSpeed, accelerationRate * Time.deltaTime);
+        if (rig == null)
+            rig = GetComponent<Rigidbody2D>();
 		rig.velocity = transform.up * currentSpeed;
 	}
 
@@ -176,7 +176,7 @@ public class ShipController : MonoBehaviour {
 		if (dis > minRadius && dis < maxRadius)
 			return;
 
-		RaceManager.EndRace();
+		RaceManager._instance.EndRace();
 	}
 
     public void ToggleThrust()

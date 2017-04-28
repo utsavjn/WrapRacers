@@ -60,8 +60,9 @@ public class PlayerController : MonoBehaviour {
     void OnEnable()
     {
         RaceManager.OnInitPlayer += InitShipParam;
-        //RaceManager.OnRaceStart += InitShipParam;
-        RaceManager.OnRaceEnd += InitShipParam;
+        RaceManager.OnStartPlayer += EnableControl;
+        RaceManager.OnDeadPlayer += InitShipParam;
+        RaceManager.OnIncPlayerSpeed += IncrementSpeed;
     }
 
     void OnDisable()
@@ -107,6 +108,12 @@ public class PlayerController : MonoBehaviour {
     {
         Debug.Log("InitShipByLevel(RaceManager._instance.CurrentLap);");
         InitShipByLevel(RaceManager._instance.CurrentLap);
+        sc.baseTopSpeed = playerInfo.baseTopSpeed;
+        sc.topSpeed = playerInfo.topSpeed;
+
+        sc.transform.position = Vector3.up;
+        sc.transform.rotation = Quaternion.Euler(0, 0, 0);
+        sc.ApplyForce();
     }
 
     void Awake()
@@ -122,9 +129,12 @@ public class PlayerController : MonoBehaviour {
     /// Initialze player(ship) move parameters(current speed and acceleration)
     /// </summary>
     void InitShipParam()
-    {        
+    {
+        DisbleControl();
         accelerationOverride = 0;
         sc.currentSpeed = 0;
+        Initialize();
+        InitPlayerItem();        
     }
 
     public void InitPlayerItem()
@@ -137,6 +147,17 @@ public class PlayerController : MonoBehaviour {
 
         DeactivateShield();
     }
+
+    void EnableControl()
+    {
+        controlsEnabled = true;
+    }
+
+    void DisbleControl()
+    {
+        controlsEnabled = false;
+    }
+    public bool ShipControlStat { set { controlsEnabled = value; } get { return controlsEnabled; } }
 
     void Update()
     {
@@ -153,9 +174,9 @@ public class PlayerController : MonoBehaviour {
     }
     #endregion
 
-    public void IncrementSpeed(float increment)
-    {
-        sc.IncrementSpeed(increment);
+    public void IncrementSpeed()
+    {     
+        sc.IncrementSpeed(Common.fIncSpeed);
     }
 
     private void ControlShip()

@@ -23,6 +23,6 @@ public class FinishLine : MonoBehaviour {
 
     void FinishRace()
     {
-        //RaceManager._instance.();
+        RaceManager._instance.FinishRace();
     }
 }

@@ -8,6 +8,7 @@ public static class Common {
     public static string strMainCanvas = "MainCanvas";
     public static string strGameOverScreen = "GameOverScreen";
     public static string strCountDown = "Countdown";
+    public static string strCountIdle = "Idle";
 
     ////////////////////////////////////////////////////////////////////////////////
     ///player of the game

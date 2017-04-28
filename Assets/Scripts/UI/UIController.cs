@@ -16,7 +16,7 @@ public class UIController : MonoBehaviour {
         gameOverScreenAnimator = canvas.FindChild(Common.strGameOverScreen).GetComponent<Animator>();
         countDown = canvas.FindChild(Common.strCountDown).GetComponent<Animator>();
     }
-
+    
     private void Start()
     {
         Initialize();
@@ -32,10 +32,11 @@ public class UIController : MonoBehaviour {
 		gameOverScreenAnimator.Animate("hide");
 	}
 
-    public void ShowCoutDown()
+    public void ShowCoutDown(string stranim, bool anim = false)
     {
+        Initialize();
         Debug.Log("countDown.Animate(Common.strCountDown);");
-        countDown.GetComponent<Image>().enabled = true;
-        countDown.Animate(Common.strCountDown);
+        //countDown.GetComponent<Image>().enabled = true;
+        countDown.Animate(stranim, anim);
     }
 }

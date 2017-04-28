@@ -12,6 +12,7 @@ public enum RACESTAT
 	Start = 1,
 	Finish =2,
 	End = 3,
+    Reset = 4,
 }
 
 public class RaceManager : MonoBehaviour {
@@ -42,6 +43,7 @@ public class RaceManager : MonoBehaviour {
     public static event RaceAction OnRaceReady;
     public static event RaceAction OnRaceFinish;
     public static event RaceAction OnRaceStart;
+    public static event RaceAction OnRaceReset;
 
     /// <summary>
     /// OnInitobstacles delegate event , when restart game , all of the obstacels is destroy and initilaize obstacles info.
@@ -52,6 +54,7 @@ public class RaceManager : MonoBehaviour {
     public delegate void PlayersAction();
     public static event PlayersAction OnDeadPlayer;
     public static event PlayersAction OnInitPlayer;
+    public static event PlayersAction OnStartPlayer;
     public static event PlayersAction OnIncPlayerSpeed;
 
     int laps = 3;
@@ -114,6 +117,7 @@ public class RaceManager : MonoBehaviour {
         OnRaceStart += OnRaceStartStat;
         OnRaceReady += OnRaceReadyStat;
         OnRaceFinish += OnRaceFinishStat;
+        OnRaceReset += OnraceResetStat;
     }
 
     void OnDisable()
@@ -124,17 +128,22 @@ public class RaceManager : MonoBehaviour {
 
     #region Race state
     // ends the race as well as runs any listeners for the race end
-    public static void EndRace()
+    public void EndRace()
     {
         if (OnRaceEnd != null) OnRaceEnd();
     }
 
-    public static void ResetRace()
+    public void ResetRace()
+    {
+        if (OnRaceReset != null) OnRaceReset();
+    }
+
+    public void StartRace()
     {
         if (OnRaceStart != null) OnRaceStart();
     }
 
-    public static void FinishRace()
+    public void FinishRace()
     {
         if (OnRaceFinish != null) OnRaceFinish();
     }
@@ -151,32 +160,40 @@ public class RaceManager : MonoBehaviour {
         OnInitObstacles();
         OnDeadPlayer();
         uc.ShowGameOver();
+        uc.ShowCoutDown(Common.strCountIdle, true);
         StopGameAudio();
     }
 
-    private void OnRaceReadyStat()
+    public void OnRaceReadyStat()
     {
         raceStat = RACESTAT.Ready;
+        OnInitPlayer();
+        uc.ShowCoutDown(Common.strCountDown, true);
+        PlayGameAudio();
+        Invoke("OnRaceStartStat", 4f);
     }
 
-    private void OnRaceStartStat()
+    public void OnRaceStartStat()
     {
         raceStat = RACESTAT.Start;
+        Debug.Log("public void OnRaceStartStat()");
+        OnStartPlayer();
+    }
+
+    private void OnraceResetStat()
+    {
+        raceStat = RACESTAT.Reset;
 
         uc.HideGameOver();
-        uc.ShowCoutDown();
-        InitilaizeGame();
-        //ResetPlayerOrientation();
-        //EnablePlayerControls();
-        //InitPlayerInfo();
-        InitRaceObstacles();
-        PlayGameAudio();
+        OnRaceReady();
     }
 
     private void OnRaceFinishStat()
     {
         raceStat = RACESTAT.Finish;
         Debug.Log("raceStat = RACESTAT.Finish;" + raceStat);
+        OnIncPlayerSpeed();
+        CycleLap();
     }
     #endregion
 
@@ -193,28 +210,7 @@ public class RaceManager : MonoBehaviour {
     private void StartRacePlayer()
     {
 
-    }
-
-  //  public void ResetPlayerOrientation()
-  //  {
-		//localPlayer.sc.transform.position = Vector3.up;
-  //      localPlayer.sc.transform.rotation = Quaternion.Euler(0, 0, 0);
-  //  }
-
-  //  public void InitPlayerInfo()
-  //  {
-  //      localPlayer.InitPlayerItem();
-  //  }    
-    	
-  //  void DisablePlayerControls()
-  //  {
-  //      localPlayer.controlsEnabled = false;
-  //  }
-
-  //  void EnablePlayerControls()
-  //  {
-  //      localPlayer.controlsEnabled = true;
-  //  }
+    } 
 
     public void PlayGameAudio()
     {
@@ -337,9 +333,6 @@ public class RaceManager : MonoBehaviour {
     private void CycleLap()
     {
         CurrentLap++;
-        if (CurrentLap < laps)
-            localPlayer.SendMessage("IncrementSpeed", speedIncrement);
-
         lapText.text = "LAP " + CurrentLap + " / " + laps;
     }
 
