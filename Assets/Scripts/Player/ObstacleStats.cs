@@ -46,20 +46,17 @@ public class ObstacleStats : MonoBehaviour, Stats {
     {
         switch (obstacleInfo.type)
         {
-            case ASTEROIDTYPE.Small:
+		case ASTEROIDTYPE.Small:
+				DoAffectObstacal ();
                 if(CheckLevel() == "Level 1")
                 {
                     //decrease player speed
                     localPlayer.sc.DecrementSpeed(20);
-                    //rigidbody - true
-                    GetComponent<Rigidbody2D>().isKinematic = true;
                 }
                 else if (CheckLevel() == "Level 2")
                 {
                     //decrease player speed
                     localPlayer.sc.DecrementSpeed(20);
-                    //rigidbody - true
-                    GetComponent<Rigidbody2D>().isKinematic = true;
                 }
                 break;
             case ASTEROIDTYPE.Medium:
@@ -72,10 +69,35 @@ public class ObstacleStats : MonoBehaviour, Stats {
         }
     }
 
+	void DoAffectObstacal()
+	{
+		Rigidbody2D rb = GetComponent<Rigidbody2D> ();
+		Vector2 own = new Vector2 (this.transform.position.x, this.transform.position.y);
+		Vector2 player = new Vector2 (localPlayer.sc.transform.position.x, localPlayer.sc.transform.position.y);
+
+		Vector2 dis = own - player;
+		rb.AddForce (dis.normalized * localPlayer.sc.currentSpeed, ForceMode2D.Impulse);
+	}
+
     void DestroyObstacle()
     {
+		string strPath;
+		switch (obstacleInfo.type) {
+		case ASTEROIDTYPE.Small:
+			strPath = Prefabs.EXPLOSION_SMALL;
+			break;
+		case ASTEROIDTYPE.Medium:
+			strPath = Prefabs.EXPLOSION_MEDIUM;
+			break;
+		case ASTEROIDTYPE.Big:
+			strPath = Prefabs.EXPLOSION_BIG;
+			break;
+		default:
+			strPath = Prefabs.EXPLOSION_SMALL;
+			break;
+		}
         //explosion effect
-        ObjectPooler.GetPooledObject(Prefabs.EXPLOSION_SMALL, transform.position, Quaternion.identity).SetActive(true);
+		ObjectPooler.GetPooledObject(strPath, transform.position, Quaternion.identity).SetActive(true);
         Destroy(gameObject);
     }
 

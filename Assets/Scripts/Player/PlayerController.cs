@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using GameData;
 
 public struct PlayerInfo
 {
@@ -29,6 +31,14 @@ public enum SHIELDSTATE
     Off = 0,
     On = 1,
 }
+
+public enum PLAYERSTATE
+{
+	None = 0,
+	Alive = 1,
+	Die = 2,
+}
+
 public class PlayerController : MonoBehaviour {
 
 	PlayerShip ship = new PlayerShip();
@@ -42,18 +52,22 @@ public class PlayerController : MonoBehaviour {
     /// Player Info
     /// </summary>
     public PlayerInfo playerInfo;
+    private List<int> m_levelDataIdList = new List<int>();
 
     public Text str_playerScore;
     public Text str_playerBooster;
 
     void OnEnable()
     {
-        RaceManager.OnRaceStart += InitShipParam;
+        RaceManager.OnInitPlayer += InitShipParam;
+        //RaceManager.OnRaceStart += InitShipParam;
+        RaceManager.OnRaceEnd += InitShipParam;
     }
 
     void OnDisable()
     {
-        RaceManager.OnRaceStart -= InitShipParam;
+        //RaceManager.OnRaceStart -= InitShipParam;
+		//RaceManager.OnRaceEnd -= InitShipParam;
     }
 
 	bool ShouldOverride
@@ -63,21 +77,57 @@ public class PlayerController : MonoBehaviour {
 
 	public float accelerationOverride = 0;
 
-    void Awake()
+    private void LoadPlayerData(int id)
     {
-        if (!sc) sc = ship.go.GetComponent<ShipController>();
+        playerInfo.baseTopSpeed = LevelData.dataMap[id].shipbasespeed;
+        playerInfo.topSpeed = LevelData.dataMap[id].shiptopspeed;
+
+        Debug.Log("playerInfo.baseTopSpeed " + playerInfo.baseTopSpeed);
+        Debug.Log("playerInfo.topSpeed " + playerInfo.topSpeed);
     }
 
+    void InitShipByLevel(int idx)
+    {
+        foreach (var key in LevelData.dataMap.Keys)
+        {
+            m_levelDataIdList.Add(key);
+        }
+
+        for(int i = 0; i < m_levelDataIdList.Count; i++)
+        {
+            string str = "level_" + idx.ToString();
+            if (str.Equals(LevelData.dataMap[m_levelDataIdList[i]].name))
+            {
+                LoadPlayerData(LevelData.dataMap[m_levelDataIdList[i]].id);
+            }
+        }
+    }
+
+    void Initialize()
+    {
+        Debug.Log("InitShipByLevel(RaceManager._instance.CurrentLap);");
+        InitShipByLevel(RaceManager._instance.CurrentLap);
+    }
+
+    void Awake()
+    {
+        if (!sc) sc = ship.go.GetComponent<ShipController>();        
+    }
+
+    private void Start()
+    {
+        Initialize();
+    }
     /// <summary>
     /// Initialze player(ship) move parameters(current speed and acceleration)
     /// </summary>
     void InitShipParam()
-    {
+    {        
         accelerationOverride = 0;
         sc.currentSpeed = 0;
     }
 
-    public void InitPlayerInfo()
+    public void InitPlayerItem()
     {
         GameObject[] objList = GameObject.FindGameObjectsWithTag("PowerUp");
         foreach (GameObject obj in objList)
@@ -90,14 +140,9 @@ public class PlayerController : MonoBehaviour {
 
     void Update()
     {
-  		if (controlsEnabled) ControlShip();       
-
-
-  		// if (sc.thrustActive)
-  		// {
-      //
-  		// }
-    }
+  		if (controlsEnabled) 
+			ControlShip();
+	}
 
     #region Ship Powerup Interface Functions
     public void ActivateShield() {
@@ -140,7 +185,7 @@ public class PlayerController : MonoBehaviour {
 			return Input.acceleration.x;
 		}
 		else {
-			return accelerationOverride;
+            return accelerationOverride;
 		}
 	}
 

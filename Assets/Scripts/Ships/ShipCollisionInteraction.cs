@@ -47,7 +47,9 @@ public class ShipCollisionInteraction : MonoBehaviour {
 		collidedObject.transform.GetComponent<Stats>().Die();
 		//GetComponent<Stats>().Hit(1);
 	}
-
+	/// <summary>
+	/// Grabs the power up.
+	/// </summary>
 	void GrabPowerUp(Transform collidedObject)
 	{
 		string powerupName = collidedObject.name.Split(' ').First();
@@ -57,10 +59,5 @@ public class ShipCollisionInteraction : MonoBehaviour {
 		PowerupController.ApplyPowerup(powerupName, GetComponent<ShipController>());
 
         Destroy(collidedObject.gameObject);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 }

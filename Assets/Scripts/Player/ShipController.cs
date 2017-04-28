@@ -2,7 +2,12 @@
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(ShipAnimator))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(PlayerStats))]
+[RequireComponent(typeof(ShipCollisionInteraction))]
+
 public class ShipController : MonoBehaviour {
 
   	public const float tiltThreshold = .2f;
@@ -22,7 +27,7 @@ public class ShipController : MonoBehaviour {
 
     PlayerController localPlayer;
 
-	const float LASER_DISTANCE = 27;
+	const float LASER_DISTANCE = 100;
 
 	#region Movement Control Attributes
 
@@ -35,7 +40,12 @@ public class ShipController : MonoBehaviour {
 	public float topSpeed = 5;
 
     private float disTraveled;
-    private float thresholdDis = 50f;
+    private float thresholdDis = 5f;
+
+	private Vector3 firstPoint = new Vector3 (387, 0, 0);
+	private Vector3 secondPoint = new Vector3 (-379, 0, 0);
+	private const float minRadius = 227f;
+	private const float maxRadius = 539f;
 
     #endregion
     public void IncrementSpeed(float increment)
@@ -58,6 +68,13 @@ public class ShipController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// initalize a ship
+    /// </summary>
+    void Initialize()
+    {
+
+    }
     void Start()
     {
         shipAnimator = GetComponent<ShipAnimator>();
@@ -93,7 +110,7 @@ public class ShipController : MonoBehaviour {
 
 	public void Move()
     {
-#if ANDROID_TEST
+#if UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
         if (thrustActive)
 #else
         if (thrustActive || Input.GetAxis("Vertical") > 0)
@@ -103,16 +120,18 @@ public class ShipController : MonoBehaviour {
             Accelerate();
 
 			// apply speed as force to rigidbody
-			ApplyForce();
+			//ApplyForce();
 		}
 		else
         {
 			Decelerate();
 
-			rig.velocity = Vector2.Lerp(rig.velocity, Vector2.zero, decelerationRate * Time.deltaTime);
+			//rig.velocity = transform.up * currentSpeed;
 		}
 
+		ApplyForce ();
         DisTraveledScore();
+		GoOutSide ();
 	}
     /// <summary>
     /// distance traveled Score
@@ -120,18 +139,19 @@ public class ShipController : MonoBehaviour {
     private void DisTraveledScore()
     {
         disTraveled += currentSpeed * Time.fixedDeltaTime;
-                        
+        
         if (disTraveled > thresholdDis)
         {
             disTraveled = 0;
-            localPlayer.AddPlayerScore(10);
+			localPlayer.AddPlayerScore(1);
         }
     }
 
     void ApplyForce()
 	{
-		//rig.AddForce(transform.up.normalized * currentSpeed, ForceMode2D.Force);
-		rig.velocity = Vector2.Lerp(rig.velocity, transform.up * topSpeed, accelerationRate * Time.deltaTime);
+		//rig.AddForce(transform.up.normalized * currentSpeed, ForceMode2D.Impulse);
+		//rig.velocity = Vector2.Lerp(rig.velocity, transform.up * topSpeed, accelerationRate * Time.deltaTime);
+		rig.velocity = transform.up * currentSpeed;
 	}
 
 	void Accelerate()
@@ -144,13 +164,20 @@ public class ShipController : MonoBehaviour {
 		currentSpeed = Mathf.Lerp(currentSpeed, 0, decelerationRate * Time.deltaTime);
 	}
 
-	void OnTriggerExit2D(Collider2D collider)
-    {
-        if(collider.tag == "map")
-        {
-			RaceManager.EndRace();
-        }
-    }
+	void GoOutSide()
+	{
+		float dis = Vector3.Distance (transform.position, firstPoint);
+
+		if (dis > minRadius && dis < maxRadius)
+			return;
+
+		dis = Vector3.Distance (transform.position, secondPoint);
+
+		if (dis > minRadius && dis < maxRadius)
+			return;
+
+		RaceManager.EndRace();
+	}
 
     public void ToggleThrust()
     {
@@ -168,7 +195,7 @@ public class ShipController : MonoBehaviour {
 
         transform.eulerAngles = newRotation;
 
-        HandleTilt(Input.acceleration.x);
+        //HandleTilt(Input.acceleration.x);
     }
 
     private void HandleTilt(float tiltValue)
@@ -189,7 +216,6 @@ public class ShipController : MonoBehaviour {
         items.transform.localPosition = new Vector3(20 + localPlayer.playerInfo.itemCount * 10, -1, 0);
         items.transform.localRotation = Quaternion.identity;
         localPlayer.playerInfo.itemCount++;
-        //localPlayer.playerInfo.itemCount
     }
 
 #region Powerup Interface Functions
@@ -211,6 +237,7 @@ public class ShipController : MonoBehaviour {
     public void GetUpHealth()
     {
         localPlayer.SetPlayerHealth(10);
+        ShowPlayerItem("Magnet");
     }
     public void GetUpMagnet()
     {
@@ -238,7 +265,8 @@ public class ShipController : MonoBehaviour {
     }
     public void GetUpEnergy()
     {
-        localPlayer.SetPlayerEnergy(10);        
+        localPlayer.SetPlayerEnergy(10);
+        ShowPlayerItem("Magnet");
     }
     public void GetUpShield()
     {

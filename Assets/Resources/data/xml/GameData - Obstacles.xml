@@ -151,7 +151,7 @@
   <Asteroid-item>
     <id_i>1013</id_i>
     <name_s>Asteroid</name_s>
-    <type>small</type>
+    <type>medium</type>
     <stringfullpath_s>Prefabs/Obstacles/Asteroid/Rock13</stringfullpath_s>
     <fragmentationids_l>0</fragmentationids_l>
     <health_i>1</health_i>
@@ -163,7 +163,7 @@
   <Asteroid-item>
     <id_i>1014</id_i>
     <name_s>Asteroid</name_s>
-    <type>small</type>
+    <type>medium</type>
     <stringfullpath_s>Prefabs/Obstacles/Asteroid/Rock14</stringfullpath_s>
     <fragmentationids_l>0</fragmentationids_l>
     <health_i>1</health_i>
@@ -175,7 +175,7 @@
   <Asteroid-item>
     <id_i>1015</id_i>
     <name_s>Asteroid</name_s>
-    <type>small</type>
+    <type>medium</type>
     <stringfullpath_s>Prefabs/Obstacles/Asteroid/Rock15</stringfullpath_s>
     <fragmentationids_l>0</fragmentationids_l>
     <health_i>1</health_i>
@@ -187,7 +187,7 @@
   <Asteroid-item>
     <id_i>1016</id_i>
     <name_s>Asteroid</name_s>
-    <type>small</type>
+    <type>medium</type>
     <stringfullpath_s>Prefabs/Obstacles/Asteroid/Rock16</stringfullpath_s>
     <fragmentationids_l>0</fragmentationids_l>
     <health_i>1</health_i>
@@ -199,7 +199,7 @@
   <Asteroid-item>
     <id_i>1017</id_i>
     <name_s>Asteroid</name_s>
-    <type>small</type>
+    <type>medium</type>
     <stringfullpath_s>Prefabs/Obstacles/Asteroid/Rock17</stringfullpath_s>
     <fragmentationids_l>0</fragmentationids_l>
     <health_i>1</health_i>
@@ -211,7 +211,7 @@
   <Asteroid-item>
     <id_i>1018</id_i>
     <name_s>Asteroid</name_s>
-    <type>small</type>
+    <type>medium</type>
     <stringfullpath_s>Prefabs/Obstacles/Asteroid/Rock18</stringfullpath_s>
     <fragmentationids_l>0</fragmentationids_l>
     <health_i>1</health_i>

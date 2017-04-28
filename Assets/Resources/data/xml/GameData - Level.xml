@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Sound>
+  <Sound-item>
+	  <id_i>4001</id_i>                                                       <!--level id: ID is an identifier that identifies all levels.-->
+	  <name_s>level_1</name_s>                                                <!--level name: -->
+    <shipbasespeed_f>80</shipbasespeed_f>
+    <shiptopspeed_f>80</shiptopspeed_f>
+  </Sound-item>
+  <Sound-item>
+    <id_i>4001</id_i>
+    <name_s>level_2</name_s>
+    <shipbasespeed_f>100</shipbasespeed_f>
+    <shiptopspeed_f>100</shiptopspeed_f>
+  </Sound-item>
+  <Sound-item>
+    <id_i>4001</id_i>
+    <name_s>level_3</name_s>
+    <shipbasespeed_f>120</shipbasespeed_f>
+    <shiptopspeed_f>120</shiptopspeed_f>
+  </Sound-item>
+</Sound>

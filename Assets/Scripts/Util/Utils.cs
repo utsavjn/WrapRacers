@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 using System.Net;
 using System.Runtime.InteropServices;
 
-namespace Htc.Util
+namespace Game.Util
 {
 	public static class Utils
 	{

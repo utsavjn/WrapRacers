@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Sound>
+  <Sound-item>
+	<id_i>3001</id_i>                                                       <!--sound id: ID is an identifier that identifies all audio.-->
+	<name_s>Peaceful-Space</name_s>                                         <!--audio name: asteroid, mine-->
+    <stringfullpath_s>backsound.mp3</stringfullpath_s>    <!--audio file full path-->  
+    <volume_f>1</volume_f>                                                  <!--The amount of volume that play audio-->
+  </Sound-item>
+</Sound>

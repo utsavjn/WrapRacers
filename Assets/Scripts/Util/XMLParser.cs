@@ -4,7 +4,7 @@ using System.Security;
 using System.Collections.Generic;
 using Mono.Xml;
 
-namespace Htc.Util
+namespace Game.Util
 {
 	public class XMLParser
 	{

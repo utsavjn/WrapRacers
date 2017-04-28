@@ -46,8 +46,6 @@ public enum OBSTACLETYPE
     Mine = 2,
 }
 
-
-
 public class ObstacleManager : MonoBehaviour {
     
     private Transform player;
@@ -168,7 +166,8 @@ public class ObstacleManager : MonoBehaviour {
         float y = obstacleGenerateInfo.checkPoint.y + obstacleGenerateInfo.radius * Mathf.Cos(ang * Mathf.Deg2Rad);
         Vector3 pos = new Vector3(x, y, 0);
 
-        Instantiate(prefabs, pos, Quaternion.identity, transform);
+        GameObject tmpItem = Instantiate(prefabs, pos, Quaternion.identity, transform) as GameObject;
+        tmpItem.name = prefabs.name;
     }
 
     void CreateAsteroid()

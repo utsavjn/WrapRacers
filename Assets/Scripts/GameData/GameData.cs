@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using System.Diagnostics;
-using Htc.Util;
+using Game.Util;
 
 namespace GameData
 {
@@ -52,7 +52,7 @@ namespace GameData
 
 	public class GameDataController : DataLoader
 	{
-		private List<Type> m_defaultData = new List<Type>() { typeof(ObstacleData), typeof(PowerUpsData)};
+		private List<Type> m_defaultData = new List<Type>() { typeof(ObstacleData), typeof(PowerUpsData), typeof(LevelData)};
 
 		private static GameDataController m_instance;
 
